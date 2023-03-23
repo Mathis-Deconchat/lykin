@@ -6,8 +6,16 @@ import PgSimplifyInflectorPlugin from "@graphile-contrib/pg-simplify-inflector";
 import PgManyToManyPlugin from "@graphile-contrib/pg-many-to-many";
 import ConnectionFilterPlugin from "postgraphile-plugin-connection-filter";
 import SubscriptionsLds from "@graphile/subscriptions-lds";
+import { CognitoJwtVerifier } from "aws-jwt-verify";
+const cors = require('cors')
 
 dotenv.config();
+
+const verifier = CognitoJwtVerifier.create({
+    clientId: '3hu9uv4mji3r734puchibacvma',
+    userPoolId: "eu-west-3_rftiJ1pB7",
+    tokenUse: "id",
+  });
 
 const DATABASE_URL =
   process.env.DATABASE_URL || "postgres://user:pass@host:5432/dbname";
@@ -22,15 +30,48 @@ const postgraphileOptions = {
     graphiql: true,
     enhanceGraphiql: true,
     subscriptions: false,
+    exportGqlSchemaPath: "schema.graphql",
     appendPlugins: [
         PgSimplifyInflectorPlugin,
         PgManyToManyPlugin,
         ConnectionFilterPlugin,
-        SubscriptionsLds,
     ],
+    cors: true,
+    
+    pgSettings: async (req: any) => {
+        console.log(req.headers)
+
+        const settings:any = {}
+
+        settings["role"] = "default-role-no-jwt";
+
+        if (req.headers.authorization) {
+            const token = req.headers.authorization.split(" ")[1];
+            try {
+                const tokenDecoded = await verifier.verify(token);
+                settings["role"] = "lykin_user";
+                settings["jwt.claims.user_id"] = tokenDecoded.sub;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        // Temp fix for testing 
+        if(req.headers["dev_user"]) {
+            settings["role"] = "lykin_user";
+            settings["jwt.claims.user_id"] = req.headers["dev_user"];
+        }
+
+        return settings;
+
+
+
+
+    }
 }
 
 const app = express();
+app.use(cors())
 app.use(postgraphile(ROOT_DATABASE_URL, SCHEMA_NAMES, postgraphileOptions));
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
