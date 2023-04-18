@@ -13,15 +13,22 @@ CREATE TABLE IF NOT EXISTS lykin.operation_categories (
     "deleted_at" TIMESTAMP,
     "created_by" TEXT,
     "updated_by" TEXT
-
 );
+
+INSERT INTO lykin.operation_categories (name) VALUES ('Courses');
+INSERT INTO lykin.operation_categories (name) VALUES ('Restauration');
+INSERT INTO lykin.operation_categories (name) VALUES ('Loisirs');
+INSERT INTO lykin.operation_categories (name) VALUES ('Santé');
+INSERT INTO lykin.operation_categories (name) VALUES ('Autre');
+
+
+
 
 -- Table: "lykin"."operation" --
 CREATE TABLE IF NOT EXISTS lykin.operation (
     "id" SERIAL PRIMARY KEY,
-    "amount" NUMERIC(10,2) NOT NULL,
+    "amount" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "date" DATE NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "deleted_at" TIMESTAMP,
@@ -75,6 +82,83 @@ CREATE TABLE IF NOT EXISTS lykin.tasks (
     FOREIGN KEY ("status_id") REFERENCES lykin.task_status ("id")
 );
 
+-- Table : "lykin"."groups_types" --
+CREATE TABLE IF NOT EXISTS lykin.groups_types (
+    "id" SERIAL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "color" TEXT NOT NULL,
+    "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "deleted_at" TIMESTAMP,
+    "created_by" TEXT,
+    "updated_by" TEXT
+
+);
+
+INSERT INTO lykin.groups_types (name, description, color) VALUES ('Colocation', 'Gérez vos dépenses, tâches récurrentes et bien plus avec vos collocs', 'blue');
+INSERT INTO lykin.groups_types (name, description, color) VALUES ('Couple', 'Mieux gérer son argent au sein d''un couple, en collocation ou chacun chez soi', 'green');
+INSERT INTO lykin.groups_types (name, description, color) VALUES ('Tout seul', 'Pour toi qui gère seul ton argent et tes tâches quotidiennes','purple');
+INSERT INTO lykin.groups_types (name, description, color) VALUES ('Entre amis', 'Gérez vos dépenses, tâches récurrentes et bien plus avec vos amis', 'yellow');
+
+-- Table: "lykin"."groups" --
+CREATE TABLE IF NOT EXISTS lykin.groups (
+    "id" SERIAL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "slug_id" TEXT NOT NULL,
+    "type_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "deleted_at" TIMESTAMP,
+    "created_by" TEXT,
+    "updated_by" TEXT,
+    "code" TEXT,
+    FOREIGN KEY ("type_id") REFERENCES lykin.groups_types ("id")
+);
+
+-- Table: "lykin"."users2groups" --
+CREATE TABLE IF NOT EXISTS lykin.users_2_groups (
+    "id" SERIAL PRIMARY KEY,
+    "user_id" TEXT NOT NULL,
+    "group_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "deleted_at" TIMESTAMP,
+    FOREIGN KEY ("group_id") REFERENCES lykin.groups ("id")
+);
+
+
+-- Generate a code for every group --
+CREATE OR REPLACE FUNCTION generate_code() RETURNS TRIGGER AS $$
+DECLARE
+    _code TEXT;
+BEGIN
+    LOOP
+        _code := CONCAT(LEFT(MD5(random()::text), 5), '-', LEFT(MD5(random()::text), 3), '-', LEFT(MD5(random()::text), 5));
+        EXIT WHEN NOT EXISTS(SELECT 1 FROM lykin.groups WHERE code = _code);
+    END LOOP;
+    NEW.code := _code;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_code
+BEFORE INSERT ON lykin.groups
+FOR EACH ROW
+WHEN (NEW.code IS NULL)
+EXECUTE FUNCTION generate_code();
+
+-- Create a function to get the user_id from the JWT token --
+CREATE OR REPLACE FUNCTION lykin.get_user_id()
+    RETURNS TEXT
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN nullif (current_setting('jwt.claims.user_id', 't'), '');
+END;
+$$;
+
+
 -- SET_FIELDS_CREATED_BYAT --
 CREATE OR REPLACE FUNCTION lykin.set_fields_created_byat ()
     RETURNS TRIGGER
@@ -87,34 +171,6 @@ BEGIN
 END;
 $$;
 
--- lykin.tasks --
-DROP TRIGGER IF EXISTS set_fields_created_byat ON lykin.tasks;
-CREATE TRIGGER set_fields_created_byat
-    BEFORE UPDATE ON lykin.tasks
-    FOR EACH ROW
-    EXECUTE PROCEDURE lykin.set_fields_created_byat();
-
--- lykin.opeation--
-DROP TRIGGER IF EXISTS set_fields_created_byat ON lykin.operation;
-CREATE TRIGGER set_fields_created_byat
-    BEFORE INSERT ON lykin.operation
-    FOR EACH ROW
-    EXECUTE PROCEDURE lykin.set_fields_created_byat();
-
-
--- lykin.operation_category --
-DROP TRIGGER IF EXISTS set_fields_created_byat ON lykin.operation_categories;
-CREATE TRIGGER set_fields_created_byat
-    BEFORE INSERT ON lykin.operation_categories
-    FOR EACH ROW
-    EXECUTE PROCEDURE lykin.set_fields_created_byat();
-
--- lykin.task_status --
-DROP TRIGGER IF EXISTS set_fields_created_byat ON lykin.task_status;
-CREATE TRIGGER set_fields_created_byat
-    BEFORE INSERT ON lykin.task_status
-    FOR EACH ROW
-    EXECUTE PROCEDURE lykin.set_fields_created_byat();
 
 
 
@@ -131,32 +187,48 @@ BEGIN
 END;
 $$;
 
--- lykin.tasks --
-DROP TRIGGER IF EXISTS set_fields_updated_byat ON lykin.tasks;
-CREATE TRIGGER set_fields_updated_byat
-    BEFORE UPDATE ON lykin.tasks
-    FOR EACH ROW
-    EXECUTE PROCEDURE lykin.set_fields_updated_byat();
 
--- lykin.opeation--
-DROP TRIGGER IF EXISTS set_fields_updated_byat ON lykin.operation;
-CREATE TRIGGER set_fields_updated_byat
-    BEFORE UPDATE ON lykin.operation
-    FOR EACH ROW
-    EXECUTE PROCEDURE lykin.set_fields_updated_byat();
+CREATE OR REPLACE FUNCTION lykin.add_user_to_group(_input_code TEXT)
+    RETURNS lykin.groups
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    _input_group_id INTEGER;
+    _input_user_id TEXT;
+    group_info lykin.groups%ROWTYPE;
+BEGIN
+    -- Check if the code is null, and raise an error if it is
+    IF _input_code IS NULL THEN
+        RAISE EXCEPTION 'Invalid input parameter: code cannot be null';
+    END IF;
 
--- lykin.operation_category --
-DROP TRIGGER IF EXISTS set_fields_updated_byat ON lykin.operation_categories;
-CREATE TRIGGER set_fields_updated_byat
-    BEFORE UPDATE ON lykin.operation_categories
-    FOR EACH ROW
-    EXECUTE PROCEDURE lykin.set_fields_updated_byat();
+    -- Get the user ID
+    _input_user_id  := lykin.get_user_id();
 
--- lykin.task_status --
-DROP TRIGGER IF EXISTS set_fields_updated_byat ON lykin.task_status;
-CREATE TRIGGER set_fields_updated_byat
-    BEFORE UPDATE ON lykin.task_status
-    FOR EACH ROW
-    EXECUTE PROCEDURE lykin.set_fields_updated_byat();
+    -- Find the group ID for the given code
+    SELECT id INTO _input_group_id FROM lykin.groups WHERE code = _input_code;
+
+    -- If the group ID is not found, raise an error
+    IF _input_group_id IS NULL THEN
+        RAISE EXCEPTION 'Invalid input parameter: code is not valid';
+    END IF;
+
+    -- Check if the user is already part of the group, and raise an error if they are
+    IF EXISTS (
+        SELECT 1 FROM lykin.users_2_groups
+        WHERE _input_user_id  = user_id AND _input_group_id = group_id
+    ) THEN
+        RAISE EXCEPTION 'User is already a member of the group';
+    END IF;
+
+    -- Add the user to the group and return the group information
+    INSERT INTO lykin.users_2_groups (user_id, group_id)
+    VALUES (_input_user_id , _input_group_id);
+    SELECT * INTO group_info FROM lykin.groups WHERE id = _input_group_id;
+    RETURN group_info;
+END;
+$$;
+
+
 
 

@@ -51,6 +51,74 @@ type Query implements Node {
     filter: FlywaySchemaHistoryFilter
   ): FlywaySchemaHistoriesConnection
 
+  """Reads and enables pagination through a set of `Group`."""
+  groups(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Group`."""
+    orderBy: [GroupsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: GroupCondition
+
+    """
+    A filter to be used in determining which values should be returned by the collection.
+    """
+    filter: GroupFilter
+  ): GroupsConnection
+
+  """Reads and enables pagination through a set of `GroupsType`."""
+  groupsTypes(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `GroupsType`."""
+    orderBy: [GroupsTypesOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: GroupsTypeCondition
+
+    """
+    A filter to be used in determining which values should be returned by the collection.
+    """
+    filter: GroupsTypeFilter
+  ): GroupsTypesConnection
+
   """Reads and enables pagination through a set of `Operation`."""
   operations(
     """Only read the first `n` values of the set."""
@@ -187,6 +255,40 @@ type Query implements Node {
     filter: TaskFilter
   ): TasksConnection
 
+  """Reads and enables pagination through a set of `Users2Group`."""
+  users2Groups(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Users2Group`."""
+    orderBy: [Users2GroupsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: Users2GroupCondition
+
+    """
+    A filter to be used in determining which values should be returned by the collection.
+    """
+    filter: Users2GroupFilter
+  ): Users2GroupsConnection
+
   """Reads and enables pagination through a set of `Users2Operation`."""
   users2Operations(
     """Only read the first `n` values of the set."""
@@ -221,10 +323,13 @@ type Query implements Node {
     filter: Users2OperationFilter
   ): Users2OperationsConnection
   flywaySchemaHistory(installedRank: Int!): FlywaySchemaHistory
+  group(id: Int!): Group
+  groupsType(id: Int!): GroupsType
   operation(id: Int!): Operation
   operationCategory(id: Int!): OperationCategory
   taskStatus(id: Int!): TaskStatus
   task(id: Int!): Task
+  users2Group(id: Int!): Users2Group
   users2Operation(id: Int!): Users2Operation
 
   """Reads a single `FlywaySchemaHistory` using its globally unique `ID`."""
@@ -234,6 +339,20 @@ type Query implements Node {
     """
     nodeId: ID!
   ): FlywaySchemaHistory
+
+  """Reads a single `Group` using its globally unique `ID`."""
+  groupByNodeId(
+    """The globally unique `ID` to be used in selecting a single `Group`."""
+    nodeId: ID!
+  ): Group
+
+  """Reads a single `GroupsType` using its globally unique `ID`."""
+  groupsTypeByNodeId(
+    """
+    The globally unique `ID` to be used in selecting a single `GroupsType`.
+    """
+    nodeId: ID!
+  ): GroupsType
 
   """Reads a single `Operation` using its globally unique `ID`."""
   operationByNodeId(
@@ -262,6 +381,14 @@ type Query implements Node {
     """The globally unique `ID` to be used in selecting a single `Task`."""
     nodeId: ID!
   ): Task
+
+  """Reads a single `Users2Group` using its globally unique `ID`."""
+  users2GroupByNodeId(
+    """
+    The globally unique `ID` to be used in selecting a single `Users2Group`.
+    """
+    nodeId: ID!
+  ): Users2Group
 
   """Reads a single `Users2Operation` using its globally unique `ID`."""
   users2OperationByNodeId(
@@ -714,6 +841,484 @@ input BooleanFilter {
   greaterThanOrEqualTo: Boolean
 }
 
+"""A connection to a list of `Group` values."""
+type GroupsConnection {
+  """A list of `Group` objects."""
+  nodes: [Group]!
+
+  """
+  A list of edges which contains the `Group` and cursor to aid in pagination.
+  """
+  edges: [GroupsEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `Group` you could get from the connection."""
+  totalCount: Int!
+}
+
+type Group implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  id: Int!
+  name: String!
+  slugId: String!
+  typeId: Int!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+  deletedAt: Datetime
+  createdBy: String
+  updatedBy: String
+  code: String
+
+  """Reads a single `GroupsType` that is related to this `Group`."""
+  type: GroupsType
+
+  """Reads and enables pagination through a set of `Users2Group`."""
+  users2Groups(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Users2Group`."""
+    orderBy: [Users2GroupsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: Users2GroupCondition
+
+    """
+    A filter to be used in determining which values should be returned by the collection.
+    """
+    filter: Users2GroupFilter
+  ): Users2GroupsConnection!
+}
+
+type GroupsType implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  id: Int!
+  name: String!
+  description: String!
+  color: String!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+  deletedAt: Datetime
+  createdBy: String
+  updatedBy: String
+
+  """Reads and enables pagination through a set of `Group`."""
+  groupsByTypeId(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Group`."""
+    orderBy: [GroupsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: GroupCondition
+
+    """
+    A filter to be used in determining which values should be returned by the collection.
+    """
+    filter: GroupFilter
+  ): GroupsConnection!
+}
+
+"""Methods to use when ordering `Group`."""
+enum GroupsOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  NAME_ASC
+  NAME_DESC
+  SLUG_ID_ASC
+  SLUG_ID_DESC
+  TYPE_ID_ASC
+  TYPE_ID_DESC
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  UPDATED_AT_ASC
+  UPDATED_AT_DESC
+  DELETED_AT_ASC
+  DELETED_AT_DESC
+  CREATED_BY_ASC
+  CREATED_BY_DESC
+  UPDATED_BY_ASC
+  UPDATED_BY_DESC
+  CODE_ASC
+  CODE_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `Group` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input GroupCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+
+  """Checks for equality with the object’s `name` field."""
+  name: String
+
+  """Checks for equality with the object’s `slugId` field."""
+  slugId: String
+
+  """Checks for equality with the object’s `typeId` field."""
+  typeId: Int
+
+  """Checks for equality with the object’s `createdAt` field."""
+  createdAt: Datetime
+
+  """Checks for equality with the object’s `updatedAt` field."""
+  updatedAt: Datetime
+
+  """Checks for equality with the object’s `deletedAt` field."""
+  deletedAt: Datetime
+
+  """Checks for equality with the object’s `createdBy` field."""
+  createdBy: String
+
+  """Checks for equality with the object’s `updatedBy` field."""
+  updatedBy: String
+
+  """Checks for equality with the object’s `code` field."""
+  code: String
+}
+
+"""
+A filter to be used against `Group` object types. All fields are combined with a logical ‘and.’
+"""
+input GroupFilter {
+  """Filter by the object’s `id` field."""
+  id: IntFilter
+
+  """Filter by the object’s `name` field."""
+  name: StringFilter
+
+  """Filter by the object’s `slugId` field."""
+  slugId: StringFilter
+
+  """Filter by the object’s `typeId` field."""
+  typeId: IntFilter
+
+  """Filter by the object’s `createdAt` field."""
+  createdAt: DatetimeFilter
+
+  """Filter by the object’s `updatedAt` field."""
+  updatedAt: DatetimeFilter
+
+  """Filter by the object’s `deletedAt` field."""
+  deletedAt: DatetimeFilter
+
+  """Filter by the object’s `createdBy` field."""
+  createdBy: StringFilter
+
+  """Filter by the object’s `updatedBy` field."""
+  updatedBy: StringFilter
+
+  """Filter by the object’s `code` field."""
+  code: StringFilter
+
+  """Checks for all expressions in this list."""
+  and: [GroupFilter!]
+
+  """Checks for any expressions in this list."""
+  or: [GroupFilter!]
+
+  """Negates the expression."""
+  not: GroupFilter
+}
+
+"""A connection to a list of `Users2Group` values."""
+type Users2GroupsConnection {
+  """A list of `Users2Group` objects."""
+  nodes: [Users2Group]!
+
+  """
+  A list of edges which contains the `Users2Group` and cursor to aid in pagination.
+  """
+  edges: [Users2GroupsEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `Users2Group` you could get from the connection."""
+  totalCount: Int!
+}
+
+type Users2Group implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  id: Int!
+  userId: String!
+  groupId: Int!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+  deletedAt: Datetime
+
+  """Reads a single `Group` that is related to this `Users2Group`."""
+  group: Group
+}
+
+"""A `Users2Group` edge in the connection."""
+type Users2GroupsEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `Users2Group` at the end of the edge."""
+  node: Users2Group
+}
+
+"""Methods to use when ordering `Users2Group`."""
+enum Users2GroupsOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  USER_ID_ASC
+  USER_ID_DESC
+  GROUP_ID_ASC
+  GROUP_ID_DESC
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  UPDATED_AT_ASC
+  UPDATED_AT_DESC
+  DELETED_AT_ASC
+  DELETED_AT_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `Users2Group` object types. All fields are tested
+for equality and combined with a logical ‘and.’
+"""
+input Users2GroupCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+
+  """Checks for equality with the object’s `userId` field."""
+  userId: String
+
+  """Checks for equality with the object’s `groupId` field."""
+  groupId: Int
+
+  """Checks for equality with the object’s `createdAt` field."""
+  createdAt: Datetime
+
+  """Checks for equality with the object’s `updatedAt` field."""
+  updatedAt: Datetime
+
+  """Checks for equality with the object’s `deletedAt` field."""
+  deletedAt: Datetime
+}
+
+"""
+A filter to be used against `Users2Group` object types. All fields are combined with a logical ‘and.’
+"""
+input Users2GroupFilter {
+  """Filter by the object’s `id` field."""
+  id: IntFilter
+
+  """Filter by the object’s `userId` field."""
+  userId: StringFilter
+
+  """Filter by the object’s `groupId` field."""
+  groupId: IntFilter
+
+  """Filter by the object’s `createdAt` field."""
+  createdAt: DatetimeFilter
+
+  """Filter by the object’s `updatedAt` field."""
+  updatedAt: DatetimeFilter
+
+  """Filter by the object’s `deletedAt` field."""
+  deletedAt: DatetimeFilter
+
+  """Checks for all expressions in this list."""
+  and: [Users2GroupFilter!]
+
+  """Checks for any expressions in this list."""
+  or: [Users2GroupFilter!]
+
+  """Negates the expression."""
+  not: Users2GroupFilter
+}
+
+"""A `Group` edge in the connection."""
+type GroupsEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `Group` at the end of the edge."""
+  node: Group
+}
+
+"""A connection to a list of `GroupsType` values."""
+type GroupsTypesConnection {
+  """A list of `GroupsType` objects."""
+  nodes: [GroupsType]!
+
+  """
+  A list of edges which contains the `GroupsType` and cursor to aid in pagination.
+  """
+  edges: [GroupsTypesEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `GroupsType` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `GroupsType` edge in the connection."""
+type GroupsTypesEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `GroupsType` at the end of the edge."""
+  node: GroupsType
+}
+
+"""Methods to use when ordering `GroupsType`."""
+enum GroupsTypesOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  NAME_ASC
+  NAME_DESC
+  DESCRIPTION_ASC
+  DESCRIPTION_DESC
+  COLOR_ASC
+  COLOR_DESC
+  CREATED_AT_ASC
+  CREATED_AT_DESC
+  UPDATED_AT_ASC
+  UPDATED_AT_DESC
+  DELETED_AT_ASC
+  DELETED_AT_DESC
+  CREATED_BY_ASC
+  CREATED_BY_DESC
+  UPDATED_BY_ASC
+  UPDATED_BY_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `GroupsType` object types. All fields are tested
+for equality and combined with a logical ‘and.’
+"""
+input GroupsTypeCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+
+  """Checks for equality with the object’s `name` field."""
+  name: String
+
+  """Checks for equality with the object’s `description` field."""
+  description: String
+
+  """Checks for equality with the object’s `color` field."""
+  color: String
+
+  """Checks for equality with the object’s `createdAt` field."""
+  createdAt: Datetime
+
+  """Checks for equality with the object’s `updatedAt` field."""
+  updatedAt: Datetime
+
+  """Checks for equality with the object’s `deletedAt` field."""
+  deletedAt: Datetime
+
+  """Checks for equality with the object’s `createdBy` field."""
+  createdBy: String
+
+  """Checks for equality with the object’s `updatedBy` field."""
+  updatedBy: String
+}
+
+"""
+A filter to be used against `GroupsType` object types. All fields are combined with a logical ‘and.’
+"""
+input GroupsTypeFilter {
+  """Filter by the object’s `id` field."""
+  id: IntFilter
+
+  """Filter by the object’s `name` field."""
+  name: StringFilter
+
+  """Filter by the object’s `description` field."""
+  description: StringFilter
+
+  """Filter by the object’s `color` field."""
+  color: StringFilter
+
+  """Filter by the object’s `createdAt` field."""
+  createdAt: DatetimeFilter
+
+  """Filter by the object’s `updatedAt` field."""
+  updatedAt: DatetimeFilter
+
+  """Filter by the object’s `deletedAt` field."""
+  deletedAt: DatetimeFilter
+
+  """Filter by the object’s `createdBy` field."""
+  createdBy: StringFilter
+
+  """Filter by the object’s `updatedBy` field."""
+  updatedBy: StringFilter
+
+  """Checks for all expressions in this list."""
+  and: [GroupsTypeFilter!]
+
+  """Checks for any expressions in this list."""
+  or: [GroupsTypeFilter!]
+
+  """Negates the expression."""
+  not: GroupsTypeFilter
+}
+
 """A connection to a list of `Operation` values."""
 type OperationsConnection {
   """A list of `Operation` objects."""
@@ -737,9 +1342,8 @@ type Operation implements Node {
   """
   nodeId: ID!
   id: Int!
-  amount: BigFloat!
+  amount: String!
   description: String!
-  date: Date!
   createdAt: Datetime!
   updatedAt: Datetime!
   deletedAt: Datetime
@@ -787,14 +1391,6 @@ type Operation implements Node {
     filter: Users2OperationFilter
   ): Users2OperationsConnection!
 }
-
-"""
-A floating point number that requires more precision than IEEE 754 binary 64
-"""
-scalar BigFloat
-
-"""The day, does not include a time."""
-scalar Date
 
 type OperationCategory implements Node {
   """
@@ -853,8 +1449,6 @@ enum OperationsOrderBy {
   AMOUNT_DESC
   DESCRIPTION_ASC
   DESCRIPTION_DESC
-  DATE_ASC
-  DATE_DESC
   CREATED_AT_ASC
   CREATED_AT_DESC
   UPDATED_AT_ASC
@@ -882,13 +1476,10 @@ input OperationCondition {
   id: Int
 
   """Checks for equality with the object’s `amount` field."""
-  amount: BigFloat
+  amount: String
 
   """Checks for equality with the object’s `description` field."""
   description: String
-
-  """Checks for equality with the object’s `date` field."""
-  date: Date
 
   """Checks for equality with the object’s `createdAt` field."""
   createdAt: Datetime
@@ -920,13 +1511,10 @@ input OperationFilter {
   id: IntFilter
 
   """Filter by the object’s `amount` field."""
-  amount: BigFloatFilter
+  amount: StringFilter
 
   """Filter by the object’s `description` field."""
   description: StringFilter
-
-  """Filter by the object’s `date` field."""
-  date: DateFilter
 
   """Filter by the object’s `createdAt` field."""
   createdAt: DatetimeFilter
@@ -957,90 +1545,6 @@ input OperationFilter {
 
   """Negates the expression."""
   not: OperationFilter
-}
-
-"""
-A filter to be used against BigFloat fields. All fields are combined with a logical ‘and.’
-"""
-input BigFloatFilter {
-  """
-  Is null (if `true` is specified) or is not null (if `false` is specified).
-  """
-  isNull: Boolean
-
-  """Equal to the specified value."""
-  equalTo: BigFloat
-
-  """Not equal to the specified value."""
-  notEqualTo: BigFloat
-
-  """
-  Not equal to the specified value, treating null like an ordinary value.
-  """
-  distinctFrom: BigFloat
-
-  """Equal to the specified value, treating null like an ordinary value."""
-  notDistinctFrom: BigFloat
-
-  """Included in the specified list."""
-  in: [BigFloat!]
-
-  """Not included in the specified list."""
-  notIn: [BigFloat!]
-
-  """Less than the specified value."""
-  lessThan: BigFloat
-
-  """Less than or equal to the specified value."""
-  lessThanOrEqualTo: BigFloat
-
-  """Greater than the specified value."""
-  greaterThan: BigFloat
-
-  """Greater than or equal to the specified value."""
-  greaterThanOrEqualTo: BigFloat
-}
-
-"""
-A filter to be used against Date fields. All fields are combined with a logical ‘and.’
-"""
-input DateFilter {
-  """
-  Is null (if `true` is specified) or is not null (if `false` is specified).
-  """
-  isNull: Boolean
-
-  """Equal to the specified value."""
-  equalTo: Date
-
-  """Not equal to the specified value."""
-  notEqualTo: Date
-
-  """
-  Not equal to the specified value, treating null like an ordinary value.
-  """
-  distinctFrom: Date
-
-  """Equal to the specified value, treating null like an ordinary value."""
-  notDistinctFrom: Date
-
-  """Included in the specified list."""
-  in: [Date!]
-
-  """Not included in the specified list."""
-  notIn: [Date!]
-
-  """Less than the specified value."""
-  lessThan: Date
-
-  """Less than or equal to the specified value."""
-  lessThanOrEqualTo: Date
-
-  """Greater than the specified value."""
-  greaterThan: Date
-
-  """Greater than or equal to the specified value."""
-  greaterThanOrEqualTo: Date
 }
 
 """A connection to a list of `Users2Operation` values."""
@@ -1384,6 +1888,9 @@ type Task implements Node {
   status: TaskStatus
 }
 
+"""The day, does not include a time."""
+scalar Date
+
 """A `Task` edge in the connection."""
 type TasksEdge {
   """A cursor for use in pagination."""
@@ -1499,6 +2006,48 @@ input TaskFilter {
   not: TaskFilter
 }
 
+"""
+A filter to be used against Date fields. All fields are combined with a logical ‘and.’
+"""
+input DateFilter {
+  """
+  Is null (if `true` is specified) or is not null (if `false` is specified).
+  """
+  isNull: Boolean
+
+  """Equal to the specified value."""
+  equalTo: Date
+
+  """Not equal to the specified value."""
+  notEqualTo: Date
+
+  """
+  Not equal to the specified value, treating null like an ordinary value.
+  """
+  distinctFrom: Date
+
+  """Equal to the specified value, treating null like an ordinary value."""
+  notDistinctFrom: Date
+
+  """Included in the specified list."""
+  in: [Date!]
+
+  """Not included in the specified list."""
+  notIn: [Date!]
+
+  """Less than the specified value."""
+  lessThan: Date
+
+  """Less than or equal to the specified value."""
+  lessThanOrEqualTo: Date
+
+  """Greater than the specified value."""
+  greaterThan: Date
+
+  """Greater than or equal to the specified value."""
+  greaterThanOrEqualTo: Date
+}
+
 """A `TaskStatus` edge in the connection."""
 type TaskStatusesEdge {
   """A cursor for use in pagination."""
@@ -1603,6 +2152,22 @@ type Mutation {
     input: CreateFlywaySchemaHistoryInput!
   ): CreateFlywaySchemaHistoryPayload
 
+  """Creates a single `Group`."""
+  createGroup(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateGroupInput!
+  ): CreateGroupPayload
+
+  """Creates a single `GroupsType`."""
+  createGroupsType(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateGroupsTypeInput!
+  ): CreateGroupsTypePayload
+
   """Creates a single `Operation`."""
   createOperation(
     """
@@ -1635,6 +2200,14 @@ type Mutation {
     input: CreateTaskInput!
   ): CreateTaskPayload
 
+  """Creates a single `Users2Group`."""
+  createUsers2Group(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateUsers2GroupInput!
+  ): CreateUsers2GroupPayload
+
   """Creates a single `Users2Operation`."""
   createUsers2Operation(
     """
@@ -1660,6 +2233,40 @@ type Mutation {
     """
     input: UpdateFlywaySchemaHistoryInput!
   ): UpdateFlywaySchemaHistoryPayload
+
+  """Updates a single `Group` using its globally unique id and a patch."""
+  updateGroupByNodeId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateGroupByNodeIdInput!
+  ): UpdateGroupPayload
+
+  """Updates a single `Group` using a unique key and a patch."""
+  updateGroup(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateGroupInput!
+  ): UpdateGroupPayload
+
+  """
+  Updates a single `GroupsType` using its globally unique id and a patch.
+  """
+  updateGroupsTypeByNodeId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateGroupsTypeByNodeIdInput!
+  ): UpdateGroupsTypePayload
+
+  """Updates a single `GroupsType` using a unique key and a patch."""
+  updateGroupsType(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateGroupsTypeInput!
+  ): UpdateGroupsTypePayload
 
   """Updates a single `Operation` using its globally unique id and a patch."""
   updateOperationByNodeId(
@@ -1730,6 +2337,24 @@ type Mutation {
   ): UpdateTaskPayload
 
   """
+  Updates a single `Users2Group` using its globally unique id and a patch.
+  """
+  updateUsers2GroupByNodeId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateUsers2GroupByNodeIdInput!
+  ): UpdateUsers2GroupPayload
+
+  """Updates a single `Users2Group` using a unique key and a patch."""
+  updateUsers2Group(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateUsers2GroupInput!
+  ): UpdateUsers2GroupPayload
+
+  """
   Updates a single `Users2Operation` using its globally unique id and a patch.
   """
   updateUsers2OperationByNodeId(
@@ -1762,6 +2387,38 @@ type Mutation {
     """
     input: DeleteFlywaySchemaHistoryInput!
   ): DeleteFlywaySchemaHistoryPayload
+
+  """Deletes a single `Group` using its globally unique id."""
+  deleteGroupByNodeId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteGroupByNodeIdInput!
+  ): DeleteGroupPayload
+
+  """Deletes a single `Group` using a unique key."""
+  deleteGroup(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteGroupInput!
+  ): DeleteGroupPayload
+
+  """Deletes a single `GroupsType` using its globally unique id."""
+  deleteGroupsTypeByNodeId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteGroupsTypeByNodeIdInput!
+  ): DeleteGroupsTypePayload
+
+  """Deletes a single `GroupsType` using a unique key."""
+  deleteGroupsType(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteGroupsTypeInput!
+  ): DeleteGroupsTypePayload
 
   """Deletes a single `Operation` using its globally unique id."""
   deleteOperationByNodeId(
@@ -1827,6 +2484,22 @@ type Mutation {
     input: DeleteTaskInput!
   ): DeleteTaskPayload
 
+  """Deletes a single `Users2Group` using its globally unique id."""
+  deleteUsers2GroupByNodeId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteUsers2GroupByNodeIdInput!
+  ): DeleteUsers2GroupPayload
+
+  """Deletes a single `Users2Group` using a unique key."""
+  deleteUsers2Group(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteUsers2GroupInput!
+  ): DeleteUsers2GroupPayload
+
   """Deletes a single `Users2Operation` using its globally unique id."""
   deleteUsers2OperationByNodeId(
     """
@@ -1842,12 +2515,24 @@ type Mutation {
     """
     input: DeleteUsers2OperationInput!
   ): DeleteUsers2OperationPayload
+  addUserToGroup(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: AddUserToGroupInput!
+  ): AddUserToGroupPayload
   createRoleIfNotExist(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     """
     input: CreateRoleIfNotExistInput!
   ): CreateRoleIfNotExistPayload
+  getUserId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: GetUserIdInput!
+  ): GetUserIdPayload
   revokePrivilegesOfRoleOnSchema(
     """
     The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -1923,6 +2608,106 @@ input FlywaySchemaHistoryInput {
   success: Boolean!
 }
 
+"""The output of our create `Group` mutation."""
+type CreateGroupPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Group` that was created by this mutation."""
+  group: Group
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `GroupsType` that is related to this `Group`."""
+  type: GroupsType
+
+  """An edge for our `Group`. May be used by Relay 1."""
+  groupEdge(
+    """The method to use when ordering `Group`."""
+    orderBy: [GroupsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GroupsEdge
+}
+
+"""All input for the create `Group` mutation."""
+input CreateGroupInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `Group` to be created by this mutation."""
+  group: GroupInput!
+}
+
+"""An input for mutations affecting `Group`"""
+input GroupInput {
+  id: Int
+  name: String!
+  slugId: String!
+  typeId: Int!
+  createdAt: Datetime
+  updatedAt: Datetime
+  deletedAt: Datetime
+  createdBy: String
+  updatedBy: String
+  code: String
+}
+
+"""The output of our create `GroupsType` mutation."""
+type CreateGroupsTypePayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `GroupsType` that was created by this mutation."""
+  groupsType: GroupsType
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `GroupsType`. May be used by Relay 1."""
+  groupsTypeEdge(
+    """The method to use when ordering `GroupsType`."""
+    orderBy: [GroupsTypesOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GroupsTypesEdge
+}
+
+"""All input for the create `GroupsType` mutation."""
+input CreateGroupsTypeInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `GroupsType` to be created by this mutation."""
+  groupsType: GroupsTypeInput!
+}
+
+"""An input for mutations affecting `GroupsType`"""
+input GroupsTypeInput {
+  id: Int
+  name: String!
+  description: String!
+  color: String!
+  createdAt: Datetime
+  updatedAt: Datetime
+  deletedAt: Datetime
+  createdBy: String
+  updatedBy: String
+}
+
 """The output of our create `Operation` mutation."""
 type CreateOperationPayload {
   """
@@ -1966,9 +2751,8 @@ input CreateOperationInput {
 """An input for mutations affecting `Operation`"""
 input OperationInput {
   id: Int
-  amount: BigFloat!
+  amount: String!
   description: String!
-  date: Date!
   createdAt: Datetime
   updatedAt: Datetime
   deletedAt: Datetime
@@ -2122,6 +2906,54 @@ input TaskInput {
   updatedBy: String
 }
 
+"""The output of our create `Users2Group` mutation."""
+type CreateUsers2GroupPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Users2Group` that was created by this mutation."""
+  users2Group: Users2Group
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Group` that is related to this `Users2Group`."""
+  group: Group
+
+  """An edge for our `Users2Group`. May be used by Relay 1."""
+  users2GroupEdge(
+    """The method to use when ordering `Users2Group`."""
+    orderBy: [Users2GroupsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): Users2GroupsEdge
+}
+
+"""All input for the create `Users2Group` mutation."""
+input CreateUsers2GroupInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `Users2Group` to be created by this mutation."""
+  users2Group: Users2GroupInput!
+}
+
+"""An input for mutations affecting `Users2Group`"""
+input Users2GroupInput {
+  id: Int
+  userId: String!
+  groupId: Int!
+  createdAt: Datetime
+  updatedAt: Datetime
+  deletedAt: Datetime
+}
+
 """The output of our create `Users2Operation` mutation."""
 type CreateUsers2OperationPayload {
   """
@@ -2243,6 +3075,154 @@ input UpdateFlywaySchemaHistoryInput {
   installedRank: Int!
 }
 
+"""The output of our update `Group` mutation."""
+type UpdateGroupPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Group` that was updated by this mutation."""
+  group: Group
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `GroupsType` that is related to this `Group`."""
+  type: GroupsType
+
+  """An edge for our `Group`. May be used by Relay 1."""
+  groupEdge(
+    """The method to use when ordering `Group`."""
+    orderBy: [GroupsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GroupsEdge
+}
+
+"""All input for the `updateGroupByNodeId` mutation."""
+input UpdateGroupByNodeIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Group` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `Group` being updated.
+  """
+  patch: GroupPatch!
+}
+
+"""
+Represents an update to a `Group`. Fields that are set will be updated.
+"""
+input GroupPatch {
+  id: Int
+  name: String
+  slugId: String
+  typeId: Int
+  createdAt: Datetime
+  updatedAt: Datetime
+  deletedAt: Datetime
+  createdBy: String
+  updatedBy: String
+  code: String
+}
+
+"""All input for the `updateGroup` mutation."""
+input UpdateGroupInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Group` being updated.
+  """
+  patch: GroupPatch!
+  id: Int!
+}
+
+"""The output of our update `GroupsType` mutation."""
+type UpdateGroupsTypePayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `GroupsType` that was updated by this mutation."""
+  groupsType: GroupsType
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `GroupsType`. May be used by Relay 1."""
+  groupsTypeEdge(
+    """The method to use when ordering `GroupsType`."""
+    orderBy: [GroupsTypesOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GroupsTypesEdge
+}
+
+"""All input for the `updateGroupsTypeByNodeId` mutation."""
+input UpdateGroupsTypeByNodeIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `GroupsType` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `GroupsType` being updated.
+  """
+  patch: GroupsTypePatch!
+}
+
+"""
+Represents an update to a `GroupsType`. Fields that are set will be updated.
+"""
+input GroupsTypePatch {
+  id: Int
+  name: String
+  description: String
+  color: String
+  createdAt: Datetime
+  updatedAt: Datetime
+  deletedAt: Datetime
+  createdBy: String
+  updatedBy: String
+}
+
+"""All input for the `updateGroupsType` mutation."""
+input UpdateGroupsTypeInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `GroupsType` being updated.
+  """
+  patch: GroupsTypePatch!
+  id: Int!
+}
+
 """The output of our update `Operation` mutation."""
 type UpdateOperationPayload {
   """
@@ -2295,9 +3275,8 @@ Represents an update to a `Operation`. Fields that are set will be updated.
 """
 input OperationPatch {
   id: Int
-  amount: BigFloat
+  amount: String
   description: String
-  date: Date
   createdAt: Datetime
   updatedAt: Datetime
   deletedAt: Datetime
@@ -2536,6 +3515,78 @@ input UpdateTaskInput {
   id: Int!
 }
 
+"""The output of our update `Users2Group` mutation."""
+type UpdateUsers2GroupPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Users2Group` that was updated by this mutation."""
+  users2Group: Users2Group
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Group` that is related to this `Users2Group`."""
+  group: Group
+
+  """An edge for our `Users2Group`. May be used by Relay 1."""
+  users2GroupEdge(
+    """The method to use when ordering `Users2Group`."""
+    orderBy: [Users2GroupsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): Users2GroupsEdge
+}
+
+"""All input for the `updateUsers2GroupByNodeId` mutation."""
+input UpdateUsers2GroupByNodeIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Users2Group` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `Users2Group` being updated.
+  """
+  patch: Users2GroupPatch!
+}
+
+"""
+Represents an update to a `Users2Group`. Fields that are set will be updated.
+"""
+input Users2GroupPatch {
+  id: Int
+  userId: String
+  groupId: Int
+  createdAt: Datetime
+  updatedAt: Datetime
+  deletedAt: Datetime
+}
+
+"""All input for the `updateUsers2Group` mutation."""
+input UpdateUsers2GroupInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Users2Group` being updated.
+  """
+  patch: Users2GroupPatch!
+  id: Int!
+}
+
 """The output of our update `Users2Operation` mutation."""
 type UpdateUsers2OperationPayload {
   """
@@ -2654,6 +3705,105 @@ input DeleteFlywaySchemaHistoryInput {
   """
   clientMutationId: String
   installedRank: Int!
+}
+
+"""The output of our delete `Group` mutation."""
+type DeleteGroupPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Group` that was deleted by this mutation."""
+  group: Group
+  deletedGroupNodeId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `GroupsType` that is related to this `Group`."""
+  type: GroupsType
+
+  """An edge for our `Group`. May be used by Relay 1."""
+  groupEdge(
+    """The method to use when ordering `Group`."""
+    orderBy: [GroupsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GroupsEdge
+}
+
+"""All input for the `deleteGroupByNodeId` mutation."""
+input DeleteGroupByNodeIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Group` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteGroup` mutation."""
+input DeleteGroupInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: Int!
+}
+
+"""The output of our delete `GroupsType` mutation."""
+type DeleteGroupsTypePayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `GroupsType` that was deleted by this mutation."""
+  groupsType: GroupsType
+  deletedGroupsTypeNodeId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `GroupsType`. May be used by Relay 1."""
+  groupsTypeEdge(
+    """The method to use when ordering `GroupsType`."""
+    orderBy: [GroupsTypesOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GroupsTypesEdge
+}
+
+"""All input for the `deleteGroupsTypeByNodeId` mutation."""
+input DeleteGroupsTypeByNodeIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `GroupsType` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteGroupsType` mutation."""
+input DeleteGroupsTypeInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: Int!
 }
 
 """The output of our delete `Operation` mutation."""
@@ -2856,6 +4006,57 @@ input DeleteTaskInput {
   id: Int!
 }
 
+"""The output of our delete `Users2Group` mutation."""
+type DeleteUsers2GroupPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Users2Group` that was deleted by this mutation."""
+  users2Group: Users2Group
+  deletedUsers2GroupNodeId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Group` that is related to this `Users2Group`."""
+  group: Group
+
+  """An edge for our `Users2Group`. May be used by Relay 1."""
+  users2GroupEdge(
+    """The method to use when ordering `Users2Group`."""
+    orderBy: [Users2GroupsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): Users2GroupsEdge
+}
+
+"""All input for the `deleteUsers2GroupByNodeId` mutation."""
+input DeleteUsers2GroupByNodeIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Users2Group` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteUsers2Group` mutation."""
+input DeleteUsers2GroupInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: Int!
+}
+
 """The output of our delete `Users2Operation` mutation."""
 type DeleteUsers2OperationPayload {
   """
@@ -2907,6 +4108,40 @@ input DeleteUsers2OperationInput {
   id: Int!
 }
 
+"""The output of our `addUserToGroup` mutation."""
+type AddUserToGroupPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  group: Group
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `GroupsType` that is related to this `Group`."""
+  type: GroupsType
+
+  """An edge for our `Group`. May be used by Relay 1."""
+  groupEdge(
+    """The method to use when ordering `Group`."""
+    orderBy: [GroupsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GroupsEdge
+}
+
+"""All input for the `addUserToGroup` mutation."""
+input AddUserToGroupInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  _inputCode: String
+}
+
 """The output of our `createRoleIfNotExist` mutation."""
 type CreateRoleIfNotExistPayload {
   """
@@ -2929,6 +4164,30 @@ input CreateRoleIfNotExistInput {
   """
   clientMutationId: String
   roleName: String
+}
+
+"""The output of our `getUserId` mutation."""
+type GetUserIdPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  string: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+}
+
+"""All input for the `getUserId` mutation."""
+input GetUserIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
 }
 
 """The output of our `revokePrivilegesOfRoleOnSchema` mutation."""
@@ -3027,4 +4286,20 @@ input SetRolesAndPrivilegesInput {
   payload verbatim. May be used to track mutations by the client.
   """
   clientMutationId: String
+}
+
+"""
+The root subscription type: contains realtime events you can subscribe to with the `subscription` operation.
+"""
+type Subscription {
+  listen(topic: String!): ListenPayload!
+}
+
+type ListenPayload {
+  """
+  Our root query field type. Allows us to run any query from our subscription payload.
+  """
+  query: Query
+  relatedNode: Node
+  relatedNodeId: ID
 }

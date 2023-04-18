@@ -1,0 +1,1 @@
+INSERT INTO lykin.groups_types (group_type_name) VALUES ('family');
