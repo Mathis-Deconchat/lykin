@@ -18,11 +18,19 @@ const cognitoClient = new CognitoIdentityProviderClient({
 //     Limit: 60,
 // });
 
-const command = new AdminGetUserCommand({
-  UserPoolId: "eu-west-3_rftiJ1pB7",
-  Username: "eb41bbf0-ee54-4067-b512-78387e909a94",
-});
+// const command = new AdminGetUserCommand({
+//   UserPoolId: "eu-west-3_rftiJ1pB7",
+//   Username: "eb41bbf0-ee54-4067-b512-78387e909a94",
+// });
 
-cognitoClient.send(command).then((response) => {
-  console.log(response);
-});
+// cognitoClient.send(command).then((response) => {
+//   console.log(response);
+// });
+
+export const getUsernameFromCognito = async (userId: string) => {
+  const command = new AdminGetUserCommand({
+    UserPoolId: "eu-west-3_rftiJ1pB7",
+    Username: userId,
+  });
+  return cognitoClient.send(command);
+};

@@ -9,6 +9,7 @@ import SubscriptionsLds from "@graphile/subscriptions-lds";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 const cors = require("cors");
 const { default: PgPubsub } = require("@graphile/pg-pubsub");
+import { getUsernameFromCognito } from "./aws";
 
 dotenv.config();
 
@@ -84,8 +85,15 @@ const app = express();
 app.use(cors());
 app.use(postgraphile(ROOT_DATABASE_URL, SCHEMA_NAMES, postgraphileOptions));
 
-app.get("/hello", (req, res) => {
-  res.send("Hello World!");
+app.get("/userInfo", (req, res) => {
+  if (req.query.userId) {
+    getUsernameFromCognito(req.query.userId.toString()).then((response) => {
+      console.log(response);
+      res.send(response);
+    });
+  } else {
+    res.send("No userId");
+  }
 });
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
